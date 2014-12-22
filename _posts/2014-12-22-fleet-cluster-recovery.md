@@ -7,15 +7,17 @@ tags: [fleet, etcd, docker]
 ---
 {% include JB/setup %}
 
+I've played around quite a while with Etcd now and it turned out to be essential to backup your data frequently. This guide describes how I usually recover crashed Fleet cluster without following the [lately documented way](https://github.com/coreos/etcd/blob/master/Documentation/2.0/admin_guide.md#disaster-recovery) of Etcd backup.
+
 # Assumption
 
 There is (or was) an Etcd cluster running on more then one node which for some reason is not operating as expected anymore. To bring the cluster back to life one needs at least one running node with valid data (to be recovered) or a valid Etcd backup. Furthermore the procedure only makes sense if the docker container Fleet has been managing before are still (part wise) running.
 Creating a Etcd backup
-Fleet is storing all necessary data in the hidden directory /_coreos.com. In order to to list the data directory with etcdctl you need to fire the following command:
+Fleet is storing all necessary data in the hidden directory `/_coreos.com`. In order to to list the data directory with `etcdctl` you need to fire the following command:
 
     $ etcdctl ls /_coreos.com --recursive
 
-To make a dump of the data stored on the Etcd node use the tool etc-backup (https://github.com/odise/etcd-backup). The tool needs two configuration files (etcd-configuration.json, backup-configuration.json). Here is an example for the production environment:
+To make a dump of the data stored on the Etcd node use the tool [etc-backup](https://github.com/odise/etcd-backup). The tool needs two configuration files (`etcd-configuration.json`, `backup-configuration.json`). Here is an example for the production environment:
 
 etcd-configuration.json
 
@@ -58,7 +60,8 @@ Make sure you have the two config file (see above) in the same directory. The du
 
 # Recreate the Etcd cluster
 
-Once the configuration of Fleet has been saved as a backup the existing Etcd cluster can be setup from scratch. It is also possible to repair the cluster by hand adding and/or removing nodes, however the current state of the implememntation (0.5.0-alpha4) is not very stable. 
+Once the configuration of Fleet has been saved as a backup the existing Etcd cluster can be setup from scratch. It is also possible to repair the cluster by hand adding and/or removing nodes, however the current state of the implementation (0.5.0-alpha4) is not very stable. 
+
 To operate on different VMs at the same time use csshx on OSX (can be installed with brew). Connect to the hosts the Etcd cluster is running and do the following:
 
 
@@ -67,7 +70,7 @@ To operate on different VMs at the same time use csshx on OSX (can be installed 
     $ rm -rf /data/etcd
 
 
-Now fix the configuration on all nodes that are intended to joining the party. Make sure the `ETCD_INITIAL_CLUSTER_STATE=new` is set in `/etc/systemd/system/etcd.service`. Restart the Etcd server on all nodes and check that it is operating as expected (use systemctl start etcd and etcdctl member list).  Don't start Fleet at the moment!
+Now fix the configuration on all nodes that are intended to joining the party. Make sure the `ETCD_INITIAL_CLUSTER_STATE=new` is set in `/etc/systemd/system/etcd.service`. Restart the Etcd server on all nodes and check that it is operating as expected (use `systemctl start etcd` and `etcdctl member list`).  **Don't start Fleet for now!**
 Now restore the backup to the cluster using the dump file from the backup procedure:
 
     $ etcd-backup restore
@@ -90,8 +93,8 @@ Now start Fleet node by node. Don't start all at the same time! Check the follow
     UNIT			MACHINE				ACTIVE	SUB
     elasticsearch@1.service	2df4dc82.../10.201.225.25	active	running
 
-# Todo
+# How to improve
 
-Establish automated backup of the etcd cluster content.
-Move Etcd cluster away form the docker hosts. Set up a small dedicated pool of 3 machines that run the Etcd cluster and reconfigure Fleet to use this instead.
+* Establish automated backup of the etcd cluster content. I started this by implementing a [cron-like container](https://github.com/odise/etcd-backup-cron) which is dumping Etcd on a regular base and uploading it to AWS S3.
+* Move Etcd cluster away form the docker hosts. Set up a small dedicated pool of 3 machines that run the Etcd cluster and reconfigure Fleet to use this instead of having it on the same machines as Fleet. Preferably don't touch it ;). 
 
