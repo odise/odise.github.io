@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Fleet cluster recovery"
-description: ""
+description: "How do you restore a broken Fleet cluster?"
 category: 
 tags: [fleet, etcd, docker]
 ---

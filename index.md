@@ -4,6 +4,9 @@ title: Landing ...
 ---
 {% include JB/setup %}
 
+I need a playground for writing blog posts and here it is. Please have a look at [Kreuzwerker blog](https://kreuzwerker.de/blog) also. 
+
+
 Recent posts:
 
 <ul class="posts">
