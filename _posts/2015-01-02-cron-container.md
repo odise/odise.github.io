@@ -23,8 +23,8 @@ What I find important is the possibility to monitor the state of the last run (e
 			Stdout: "... Checking the repository ... ... Taking snapshot ... ... Couldn't create the snapshot on repository es_backup_s3_repo at http://192.168.59.103:9200 ",
 			Stderr: "{ "error" : "SnapshotCreationException[[es_backup_s3_repo:2015-01-03-13-36-30_my_fancy_production_snapshot] failed to create snapshot]; nested: IOException[Failed to get s]napshot-2015-01-03-13-36-30_my_fancy_production_snapshot]]; nested: AmazonS3Exception[Access Denied (Service: Amazon S3; Status Code: 403; Error Code: AccessDenied; Request ID: XYZ)]; ", "status" : 500 } ",
 			ExitTime: "2015-01-03T13:36:30Z",
-		Pid: 22,
-		StartingTime: "2015-01-03T13:36:30Z"
+			Pid: 22,
+			StartingTime: "2015-01-03T13:36:30Z"
 		},
 		Schedule: "0/10 * * * * *"
 	}
