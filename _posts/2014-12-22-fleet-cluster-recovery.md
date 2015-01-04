@@ -3,7 +3,7 @@ layout: post
 title: "Fleet cluster recovery"
 description: "How do you restore a broken Fleet cluster?"
 category: 
-tags: [fleet, etcd, docker]
+tags: [fleet, etcd, Docker]
 ---
 {% include JB/setup %}
 

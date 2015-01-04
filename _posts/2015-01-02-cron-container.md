@@ -2,7 +2,7 @@
 layout: post
 category: 
 tagline: "Handling tasks periodically with Docker container"
-tags : [Docker, Elasticsearch, Etcd, cronjob]
+tags : [Docker, Elasticsearch, etcd, cronjob]
 ---
 {% include JB/setup %}
 
