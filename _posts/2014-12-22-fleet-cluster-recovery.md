@@ -11,7 +11,7 @@ I've played around quite a while with Etcd now and it turned out to be essential
 
 # Assumption
 
-There is (or was) an Etcd cluster running on more then one node which for some reason is not operating as expected anymore. To bring the cluster back to life one needs at least one running node with valid data (to be recovered) or a valid Etcd backup. Furthermore the procedure only makes sense if the docker container Fleet has been managing before are still (part wise) running.
+There is (or was) an Etcd cluster running on more than one node which for some reason is not operating as expected anymore. To bring the cluster back to life one needs at least one running node with valid data (to be recovered) or a valid Etcd backup. Furthermore the procedure only makes sense if the docker container Fleet has been managing before are still (part wise) running.
 Creating a Etcd backup
 Fleet is storing all necessary data in the hidden directory `/_coreos.com`. In order to to list the data directory with `etcdctl` you need to fire the following command:
 
@@ -56,7 +56,7 @@ Creating a backup by hand can be done the following way:
 
     $ etcd-backup dump
 
-Make sure you have the two config file (see above) in the same directory. The dump will be created as file dump.json.  Store it on safe place.
+Make sure you have the two config files (see above) in the same directory. The dump will be created as file dump.json.  Store it on safe place.
 
 # Recreate the Etcd cluster
 
@@ -70,7 +70,7 @@ To operate on different VMs at the same time use csshx on OSX (can be installed 
     $ rm -rf /data/etcd
 
 
-Now fix the configuration on all nodes that are intended to joining the party. Make sure the `ETCD_INITIAL_CLUSTER_STATE=new` is set in `/etc/systemd/system/etcd.service`. Restart the Etcd server on all nodes and check that it is operating as expected (use `systemctl start etcd` and `etcdctl member list`).  **Don't start Fleet for now!**
+Now fix the configuration on all nodes that are intended to join the party. Make sure the `ETCD_INITIAL_CLUSTER_STATE=new` is set in `/etc/systemd/system/etcd.service`. Restart the Etcd server on all nodes and check that it is operating as expected (use `systemctl start etcd` and `etcdctl member list`).  **Don't start Fleet for now!**
 Now restore the backup to the cluster using the dump file from the backup procedure:
 
     $ etcd-backup restore
