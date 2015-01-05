@@ -7,7 +7,7 @@ tags: [fleet, etcd, Docker]
 ---
 {% include JB/setup %}
 
-I've played around quite a while with Etcd now and it turned out to be essential to backup your data frequently. This guide describes how I usually recover crashed Fleet cluster without following the [lately documented way](https://github.com/coreos/etcd/blob/master/Documentation/2.0/admin_guide.md#disaster-recovery) of Etcd backup.
+I've played around quite a while with Etcd now and it turned out to be essential to backup your data frequently. This guide describes how I usually recover crashed Fleet cluster without following the [lately documented way](https://github.com/coreos/etcd/blob/master/Documentation/2.0/admin_guide.md#disaster-recovery) of Etcd backup. I recommend to follow the official approach using `etcdctl` however the recovery procedure is complex and operating on a JSON dump can give you more flexibility. Disclaimer: use this unofficial guide below on your own risk. 
 
 # Assumption
 
