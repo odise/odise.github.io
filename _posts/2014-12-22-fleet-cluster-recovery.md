@@ -95,6 +95,6 @@ Now start Fleet node by node. Don't start all at the same time! Check the follow
 
 # How to improve
 
-* Establish automated backup of the etcd cluster content. I started this by implementing a [cron-like container](https://github.com/odise/etcd-backup-cron) which is dumping Etcd on a regular base and uploading it to AWS S3.
+* Establish automated backup of the etcd cluster content. I started this by implementing a [cron-like container](https://github.com/odise/cron-container) which is dumping Etcd on a regular base and uploading it to AWS S3.
 * Move Etcd cluster away form the docker hosts. Set up a small dedicated pool of 3 machines that run the Etcd cluster and reconfigure Fleet to use this instead of having it on the same machines as Fleet. Preferably don't touch it ;). 
 
