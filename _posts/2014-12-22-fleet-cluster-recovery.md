@@ -56,7 +56,7 @@ Creating a backup by hand can be done the following way:
 
     $ etcd-backup dump
 
-Make sure you have the two config files (see above) in the same directory. The dump will be created as file dump.json.  Store it on safe place.
+Make sure you have the two config files (see above) in the same directory. The dump will be created as a file dump.json.  Store it at a safe place.
 
 # Recreate the Etcd cluster
 
