@@ -7,7 +7,7 @@ tags: [Docker, busybox, AWS, aws-cli]
 ---
 {% include JB/setup %}
 
-In my last post I demonstrated how to build a minimal Docker image for the [cron-container](https://github.com/odise/cron-container). All in all this approach works pretty well for the described use case. Following this road I wanted to use [aws-cli](https://github.com/aws/aws-cli) for periodical AWS infrastructure updates. The `aws` command line tool is implemented in Python which needs to be installed inside the container. I found the [python base images](https://registry.hub.docker.com/_/python/) which provides the interpreter but comes with a huge overhead. The container became kind of huge for a simple script (the `python:2-slim` image has a size of approx. 200mb). 
+In my last post I demonstrated how to build a minimal Docker image for the [cron-container](https://github.com/odise/cron-container). All in all this approach works pretty well for the described use case. Following this road I wanted to use [aws-cli](https://github.com/aws/aws-cli) for periodical AWS infrastructure updates. The `aws` command line tool is implemented in Python which needs to be installed inside the container. I found the [python base images](https://registry.hub.docker.com/_/python/) which provides the interpreter but comes with a massive overhead. The container became kind of huge for a simple script (the `python:2-slim` image has a size of approx. 200mb). 
 
 Searching around [pointed](http://yasermartinez.com/blog/posts/creating-super-small-docker-images.html) me to [Pyrun](https://www.egenix.com/products/python/PyRun/) - a static linked Python binary of 11mb size. In combination with [progrium/busybox](https://github.com/progrium/busybox) the container becomes much smaller. Missing dependencies needed by Pyrun (Openssl, zlib, SQlite, bzip2) can be installed with the help of the `opkg`.
 
@@ -66,4 +66,4 @@ FROM odise/busybox-python:stable
 RUN easy_install awscli
 ```
 
-There might be some [limitations](https://www.egenix.com/products/python/PyRun/doc/#_Toc390548380) due to the nature of Pyrun. I didn't tested tools other then `aws` so far.  
+There might be some [limitations](https://www.egenix.com/products/python/PyRun/doc/#_Toc390548380) due to the nature of Pyrun. I didn't tested tools other then `aws` so far. If you have some experience in using Pyrun, please drop me a line. 
