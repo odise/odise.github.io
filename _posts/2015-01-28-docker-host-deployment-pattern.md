@@ -7,6 +7,8 @@ tags: [ AWS, cloud-init, systemd, Docker, Packer ]
 ---
 {% include JB/setup %}
 
+**THIS IS WORK IN PROGRESS**
+
 The deployment pattern for setting up services in a cloud like environment has somewhat changed over the last weeks. The reason is mainly container based application deployments. This happened for AWS as well as for (more or less static) data centers that provides you with bare VM resources which can be created and destroyed up on demand. A few month ago deployments have done with tools like Chef, Ansible and friends to provision a whole machine with everything thats needed for a specific application. Software containers (and namely Docker) has changed that quite a bit. 
 
 Setting up Docker host machines as easy and flexible as possible is the name of the game. The easiest approach for that is: _running one container per node_. Of cause this is not the most efficient way to use VM resources but the best in terms of simplicity.
