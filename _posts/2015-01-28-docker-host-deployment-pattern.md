@@ -85,9 +85,9 @@ Truly not everything can be handled within base image. There is a need for OS sy
 * deploy system updates
 * deploy container images and configuration
 
-For AWS EC2 instances (and a [bunch of others](https://cloudinit.readthedocs.org/en/latest/topics/datasources.html) including OpenStack, vSphere and even [Vagrant](http://davemartorana.com/logs/software/cloud-init-in-vagrant-with-ubuntu-12-10-13-04/)) dynamic configuration can be done with [user data](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html#instancedata-user-data-retrieval) based on [cloudinit](http://cloudinit.readthedocs.org/). Using it gives you you the opportunity to set some last bits on a freshly launched VM. 
+For AWS EC2 instances (and a [bunch of others](https://cloudinit.readthedocs.org/en/latest/topics/datasources.html) including OpenStack, vSphere and even [Vagrant](http://davemartorana.com/logs/software/cloud-init-in-vagrant-with-ubuntu-12-10-13-04/)) dynamic configuration can be done with [user data](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html#instancedata-user-data-retrieval) based on [cloudinit](http://cloudinit.readthedocs.org/). Using it gives you the opportunity to set some last bits on a freshly launched VM. 
 
-A lot of things can be told about it but what I found most important is how to test cloud-init user data without fireing an instance a dozen times before your code works as expected. Testing can be done on a running instance by creating a `seed` directory for the [NoCloudNet](http://cloudinit.readthedocs.org/en/latest/topics/datasources.html#no-cloud) datasource, putting the user data in there and restarting the `cloud-init` service:
+A lot of things can be told about it but what I found most important is how to test cloud-init user data without firing an instance a dozen times before your code works as expected. Testing can be done on a running instance by creating a `seed` directory for the [NoCloudNet](http://cloudinit.readthedocs.org/en/latest/topics/datasources.html#no-cloud) datasource, putting the user data in there and restarting the `cloud-init` service:
 
 
 ```
@@ -102,13 +102,16 @@ $ cat /var/lib/cloud/seed/nocloud-net/user-data
 runcmd:
  - [ sh, -c, 'echo ==== $(date) ====; echo HI WORLD; echo =======' ]
 
+$ # remove the data from /var/lib/cloud/instance/ to mimic a freshly created instance
 $ rm -rf /var/lib/cloud/instance/*
+$ # restart the cloud-init service 
 $ sudo systemctl restart cloud-init
+$ # check the logs
 $ sudo journalctl -u cloud-init
 ...
 $ less /var/log/cloud-init.log
 ```
-BTW: [CoreOS](https://github.com/coreos/coreos-cloudinit) machine customization is heavily depending on the same mechanism.
+BTW: [CoreOS](https://github.com/coreos/coreos-cloudinit) machine customization is heavily using the same mechanism. Even more interesting the guys reimplemented the cloudinit specification (originally in Python) in Golang. The project is available on Github: [coreos-cloudinit](https://github.com/coreos/coreos-cloudinit).
 
 # Starting Docker containers
 
@@ -137,9 +140,7 @@ With this unit file, installed on `/etc/systemd/system/nginx.service` and enable
 
 Docker registries authentication can be handled with the help of `.dockercfg` and the [`User=`](http://www.freedesktop.org/software/systemd/man/systemd.exec.html) option of systemd.
 
-## Excursus
-
-Using this quite a while makes you maybe halting. Things sometimes do not work as expected. Container don't get killed or removed properly etc. Systemd does not actually supervise the Docker container you are starting in the unit file but instead the Docker client. This makes systemd incapable of reliably managing Docker containers. Luckily there is a quite neat workaround for that: [systemd-docker](https://github.com/ibuildthecloud/systemd-docker). Using this wrapper your unit file looks a bit different though:
+Using this quite a while makes you maybe halting. Things sometimes do not work as expected. Container don't get killed or removed properly etc. Systemd does not actually supervise the Docker container you are starting in the unit file but instead the Docker client. This makes systemd incapable of reliably managing Docker containers. Luckily there is a quite neat workaround for that: [systemd-docker](https://github.com/ibuildthecloud/systemd-docker). Please check the Github page to get more background information about the problem. Using this wrapper your unit file looks a bit different though:
 
 ```
 [Unit]
@@ -162,3 +163,5 @@ TimeoutStopSec=15
 [Install]
 WantedBy=multi-user.target
 ```
+
+I think for the time being this little tool improves the way Docker containers and systemd collaborate. There are other container implementations rising so it's going to be an interesting 2015.
