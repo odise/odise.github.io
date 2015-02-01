@@ -9,11 +9,11 @@ tags: [ AWS, cloud-init, systemd, Docker, Packer ]
 
 **THIS IS WORK IN PROGRESS**
 
-The deployment pattern for setting up services in a cloud like environment has somewhat changed over the last weeks. The reason is mainly container based application deployments. This happened for AWS as well as for (more or less static) data centers that provides you with bare VM resources which can be created and destroyed up on demand. A few month ago deployments have done with tools like Chef, Ansible and friends to provision a whole machine with everything thats needed for a specific application. Software containers (and namely Docker) has changed that quite a bit. 
+The deployment pattern for setting up services in a cloud like environment I'm going to follow has somewhat changed over the past weeks. The reason is mainly container based application deployments. This happened for AWS as well as for (more or less static) data centers that provides you with bare VM resources which can be created and destroyed up on demand. A few month ago deployments have done with tools like Chef, Ansible and friends to provision a whole machine with everything thats needed for a specific application. Software containers (and namely Docker) has changed that quite a bit. 
 
-Setting up Docker host machines as easy and flexible as possible is the name of the game. The easiest approach for that is: _running one container per node_. Of cause this is not the most efficient way to use VM resources but the best in terms of simplicity.
+Setting up Docker host machines as easy and flexible as possible is the name of the game. The easiest approach for that is: _running one container per node_. Of cause this is not the most efficient way to use VM resources but the best in terms of simplicity. Surely a lot of container orchestration solutions appeared in 2014 but they all bring more complexity to your data-center. In short I did't fall in love so far.
 
-Let us have a look on some basic concepts how to do this for a virtual machine inside cooperate data-center and on an AWS EC2 instance.
+Let us have a look on some basic concepts how to run container based deployments on virtual machines inside cooperate data-center and on an AWS EC2 instance.
 
 # Basic tasks 
 
@@ -24,7 +24,7 @@ Here comes our check list including the major tasks that needs to be done to set
 * Install basic tools like `curl`, `tmux`, `nmap`, `awscli` or what ever else you need in order to check your system is running as expected. 
 * Install `docker` and add user to the `docker` group.
 * Install monitoring tools and agents like [Datadog](http://docs.datadoghq.com/guides/basic_agent_usage) or [NewRelic](https://docs.newrelic.com/docs/apm/new-relic-apm/installation-configuration/installing-agent).
-* At the end of this chain you want to install you container and start them. 
+* At the end of this chain you want to install you container and start them under supervision. 
 
 # Deploy your stuff
 
@@ -80,10 +80,7 @@ Starting from a base image, that has all the tools you need installed and runnin
 
 # Handling dynamic instance data 
 
-Truly not everything can be handled within base image. There is a need for OS system updates and container deployment at the initial instance launch. Generally Ansible and friends can help here as long as this procedure is kept as short as possible:
-
-* deploy system updates
-* deploy container images and configuration
+Truly not everything can be handled within base image. There is a need for OS system updates and container deployment at the initial instance launch. Generally Ansible and friends can help here as long as this procedure is kept as short as possible - but there are alternatives.
 
 For AWS EC2 instances (and a [bunch of others](https://cloudinit.readthedocs.org/en/latest/topics/datasources.html) including OpenStack, vSphere and even [Vagrant](http://davemartorana.com/logs/software/cloud-init-in-vagrant-with-ubuntu-12-10-13-04/)) dynamic configuration can be done with [user data](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html#instancedata-user-data-retrieval) based on [cloudinit](http://cloudinit.readthedocs.org/). Using it gives you the opportunity to set some last bits on a freshly launched VM. 
 
@@ -140,7 +137,7 @@ With this unit file, installed on `/etc/systemd/system/nginx.service` and enable
 
 Docker registries authentication can be handled with the help of `.dockercfg` and the [`User=`](http://www.freedesktop.org/software/systemd/man/systemd.exec.html) option of systemd.
 
-Using this quite a while makes you maybe halting. Things sometimes do not work as expected. Container don't get killed or removed properly etc. Systemd does not actually supervise the Docker container you are starting in the unit file but instead the Docker client. This makes systemd incapable of reliably managing Docker containers. Luckily there is a quite neat workaround for that: [systemd-docker](https://github.com/ibuildthecloud/systemd-docker). Please check the Github page to get more background information about the problem. Using this wrapper your unit file looks a bit different though:
+Using this quite a while makes you maybe halting. Things sometimes do not work as expected. Container does not restarting or getting removed properly on termination etc. Systemd does not actually supervise the Docker container you are starting in the unit filebut instead the Docker client. This makes systemd incapable of reliably managing Docker containers. Luckily there is a quite neat workaround for that: [systemd-docker](https://github.com/ibuildthecloud/systemd-docker). Please check the Github page to get more background information about the problem. Using this wrapper your unit file looks a bit different though:
 
 ```
 [Unit]
@@ -164,4 +161,4 @@ TimeoutStopSec=15
 WantedBy=multi-user.target
 ```
 
-I think for the time being this little tool improves the way Docker containers and systemd collaborate. There are other container implementations rising so it's going to be an interesting 2015.
+I think for the time being this little tool improves the way Docker containers and systemd collaborate. There are other container implementations rising so it's going to be an interesting year 2015.
