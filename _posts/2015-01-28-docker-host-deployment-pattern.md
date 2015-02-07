@@ -9,11 +9,11 @@ tags: [ AWS, cloud-init, systemd, Docker, Packer ]
 
 **THIS IS WORK IN PROGRESS**
 
-The deployment pattern for setting up services in a cloud like environment I'm going to follow has somewhat changed over the past weeks. The reason is mainly container based application deployments. This happened for AWS as well as for (more or less static) data centers that provides you with bare VM resources which can be created and destroyed up on demand. A few month ago deployments have done with tools like Chef, Ansible and friends to provision a whole machine with everything thats needed for a specific application. Software containers (and namely Docker) has changed that quite a bit. 
+The deployment pattern for setting up services in a cloud environment I'm going to follow has somewhat changed over the past weeks. The reason is mainly container based application deployments. This appears for AWS as well as for (more or less static) data centers that provides you with bare VM resources which can be created and destroyed up on demand. A few month ago software deployments have done entirely with tools like Chef or Ansible to provision a whole machine with everything thats needed to run a specific application. Software containers (and namely Docker) has changed that quite a bit. 
 
 Setting up Docker host machines as easy and flexible as possible is the name of the game. The easiest approach for that is: _running one container per node_. Of cause this is not the most efficient way to use VM resources but the best in terms of simplicity. Surely a lot of container orchestration solutions appeared in 2014 but they all bring more complexity to your data-center. In short I did't fall in love so far.
 
-Let us have a look on some basic concepts how to run container based deployments on virtual machines inside cooperate data-center and on an AWS EC2 instance.
+Let us have a look on some basic concepts how to run container based deployments on virtual machines inside cooperate data-center and on AWS EC2 instances.
 
 # Basic tasks 
 
@@ -22,7 +22,7 @@ Here comes our check list including the major tasks that needs to be done to set
 * Store public SSH keys for administrators. Disable `root` login. Set the correct timezone etc.
 * Update the system, enable `yum` or `apt` repositories to install further applications.
 * Install basic tools like `curl`, `tmux`, `nmap`, `awscli` or what ever else you need in order to check your system is running as expected. 
-* Install `docker` and add user to the `docker` group.
+* Install `docker` and add a user to the `docker` group.
 * Install monitoring tools and agents like [Datadog](http://docs.datadoghq.com/guides/basic_agent_usage) or [NewRelic](https://docs.newrelic.com/docs/apm/new-relic-apm/installation-configuration/installing-agent).
 * At the end of this chain you want to install you container and start them under supervision. 
 
@@ -76,7 +76,7 @@ I found [Packer](https://www.packer.io/docs) being an fantastic tool for buildin
 
 ``` 
 
-Starting from a base image, that has all the tools you need installed and running a OS update procedure on VM startup, can speed up things dramatically. For automatic instance up- and downscaling things needs to be fast. If OS updates take to long in this context, the base images can be build on a regular base as part of your CI lifecycle.
+Starting from a base image, that has all the tools you need installed and running an OS update procedure on VM startup, can speed up things dramatically. For automatic instance up- and downscaling things needs to be fast. If OS updates take to long in this context, the base images can be build on a regular base as part of your CI lifecycle.
 
 # Handling dynamic instance data 
 
@@ -112,7 +112,7 @@ BTW: [CoreOS](https://github.com/coreos/coreos-cloudinit) machine customization 
 
 # Starting Docker containers
 
-The last piece in the puzzle. Again nearly all configuration management software too;chains support Docker container deployments out of the box now. However this being the most volatile part of the provisioning we always want to have the latest version of the container available. Moreover preferably we want to update the containers without destroying the whole instance. 
+The last piece in the puzzle. Again nearly all configuration management software toolchains support Docker container deployments out of the box now. However this being the most volatile part of the provisioning we always want to have the latest version of the container available. Moreover preferably we want to update the containers without destroying the whole instance. 
 
 Using [systemd](http://www.freedesktop.org/wiki/Software/systemd/) unit files to `pull` and `run` containers is a very interesting approach. On the [CoreOS how-to pages](https://coreos.com/docs/launching-containers/launching/getting-started-with-systemd/)  some examples can be found. Here is a snippet:
 
@@ -137,7 +137,7 @@ With this unit file, installed on `/etc/systemd/system/nginx.service` and enable
 
 Docker registries authentication can be handled with the help of `.dockercfg` and the [`User=`](http://www.freedesktop.org/software/systemd/man/systemd.exec.html) option of systemd.
 
-Using this quite a while makes you maybe halting. Things sometimes do not work as expected. Container does not restarting or getting removed properly on termination etc. Systemd does not actually supervise the Docker container you are starting in the unit filebut instead the Docker client. This makes systemd incapable of reliably managing Docker containers. Luckily there is a quite neat workaround for that: [systemd-docker](https://github.com/ibuildthecloud/systemd-docker). Please check the Github page to get more background information about the problem. Using this wrapper your unit file looks a bit different though:
+Using this quite a while makes you maybe halting. Things sometimes do not work as expected. Container does not restarting or getting removed properly on termination etc. Systemd does not actually supervise the Docker container you are starting in the unit file but instead the Docker client. This makes systemd incapable of reliably managing Docker containers. Luckily there is a quite neat workaround for that: [systemd-docker](https://github.com/ibuildthecloud/systemd-docker). Please check the Github page to get more background information about the problem. Using this wrapper your unit file looks a bit different though:
 
 ```
 [Unit]
