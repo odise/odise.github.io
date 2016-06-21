@@ -1,3 +1,12 @@
+---
+layout: post
+title: "Adding a layer of security with the help of API gateways"
+tagline: "API gateway thoughts"
+category: 
+tags: [ AWS, api gateway, security ]
+---
+{% include JB/setup %}
+
 # Adding a layer of security with the help of API gateways
 
 **tl;dr:**
