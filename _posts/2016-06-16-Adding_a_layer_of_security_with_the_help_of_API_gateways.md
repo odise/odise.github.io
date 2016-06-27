@@ -13,6 +13,7 @@ How to create a unified API and implement additional business logic to orchestra
 
 ![alt text](http://c7.staticflickr.com/2/1535/26580883726_e779f3a774_h.jpg "Gateway")
 Image credits go to [Alexis Lewis](https://www.flickr.com/photos/136522029@N03/26580883726).
+
 ## Prologue
 
 Building extendable web applications isn't an easy task to do. Especially with microservices environments it might start with domains of small responsibilities but tend to become a zoo of components accumulating clusters of functionality. Dependencies among those micro components can easily lead into complex architectures that can become hard to manage. 
